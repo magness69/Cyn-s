@@ -1,0 +1,16 @@
+{
+  "name": "Nourish - Healthy Eating Made Easy",
+  "short_name": "Nourish",
+  "description": "Your cozy companion for discovering delicious, healthy meals",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7f5",
+  "theme_color": "#4a7c59",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
