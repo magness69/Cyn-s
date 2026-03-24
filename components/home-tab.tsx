@@ -36,7 +36,7 @@ export function HomeTab({ onMealSelect }: HomeTabProps) {
             What delicious & healthy meal shall we make today?
           </p>
         </div>
-        <AppLogo size="md" />
+
       </div>
 
       {/* Featured Recipe */}
@@ -46,8 +46,8 @@ export function HomeTab({ onMealSelect }: HomeTabProps) {
             <span>⭐</span> Featured Recipe
           </h2>
         </div>
-        <MealCard 
-          meal={featuredMeal} 
+        <MealCard
+          meal={featuredMeal}
           onClick={() => onMealSelect(featuredMeal)}
           className="shadow-lg"
         />
