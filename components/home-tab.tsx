@@ -2,6 +2,7 @@
 
 import { meals, Meal } from '@/lib/meals-data'
 import { MealCard } from './meal-card'
+import { AppLogo } from './app-logo'
 
 interface HomeTabProps {
   onMealSelect: (meal: Meal) => void
@@ -24,15 +25,18 @@ export function HomeTab({ onMealSelect }: HomeTabProps) {
 
   return (
     <div className="pb-4">
-      {/* Header */}
-      <div className="mb-6 animate-slide-up">
-        <span className="text-3xl mb-2 block">{emoji}</span>
-        <h1 className="text-2xl font-bold text-foreground">
-          {text}!
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          What delicious & healthy meal shall we make today?
-        </p>
+      {/* Header with Logo */}
+      <div className="flex items-start justify-between mb-6 animate-slide-up">
+        <div>
+          <span className="text-3xl mb-2 block">{emoji}</span>
+          <h1 className="text-2xl font-bold text-foreground">
+            {text}!
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            What delicious & healthy meal shall we make today?
+          </p>
+        </div>
+        <AppLogo size="md" />
       </div>
 
       {/* Featured Recipe */}

@@ -18,7 +18,39 @@ export interface CalorieEntry {
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
 }
 
+export interface UserProfile {
+  name: string
+  bio: string
+  email: string
+  avatar: string | null
+  height: string
+  weight: string
+  heightUnit: 'cm' | 'ft'
+  weightUnit: 'kg' | 'lbs'
+  provider?: string
+}
+
+export interface AppSettings {
+  notifications: boolean
+  mealReminders: boolean
+  weeklyReport: boolean
+  privateProfile: boolean
+  saveDataLocally: boolean
+  language: string
+}
+
 interface AppContextType {
+  // User profile
+  user: UserProfile | null
+  setUser: (user: UserProfile | null) => void
+  isAuthenticated: boolean
+  hasCompletedOnboarding: boolean
+  setHasCompletedOnboarding: (value: boolean) => void
+  
+  // Settings
+  settings: AppSettings
+  updateSettings: (settings: AppSettings) => void
+  
   // Calorie tracking
   dailyCalorieGoal: number
   setDailyCalorieGoal: (goal: number) => void
@@ -40,11 +72,35 @@ interface AppContextType {
   // Weekly stats
   weeklyMealsCooked: number
   incrementMealsCooked: () => void
+  dayStreak: number
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
+const defaultSettings: AppSettings = {
+  notifications: true,
+  mealReminders: true,
+  weeklyReport: true,
+  privateProfile: false,
+  saveDataLocally: false,
+  language: 'English',
+}
+
+const defaultProfile: UserProfile = {
+  name: 'Healthy Foodie',
+  bio: 'Eating clean and loving it!',
+  email: '',
+  avatar: null,
+  height: '',
+  weight: '',
+  heightUnit: 'cm',
+  weightUnit: 'kg',
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UserProfile | null>(null)
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false)
+  const [settings, setSettings] = useState<AppSettings>(defaultSettings)
   const [dailyCalorieGoal, setDailyCalorieGoal] = useState(2000)
   const [calorieEntries, setCalorieEntries] = useState<CalorieEntry[]>([])
   const [reminders, setReminders] = useState<Reminder[]>([
@@ -54,6 +110,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   ])
   const [favorites, setFavorites] = useState<string[]>([])
   const [weeklyMealsCooked, setWeeklyMealsCooked] = useState(5)
+  const [dayStreak, setDayStreak] = useState(7)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   // Load from localStorage
   useEffect(() => {
@@ -61,27 +119,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (stored) {
       try {
         const data = JSON.parse(stored)
+        if (data.user) setUser(data.user)
+        if (data.hasCompletedOnboarding !== undefined) setHasCompletedOnboarding(data.hasCompletedOnboarding)
+        if (data.settings) setSettings(data.settings)
         if (data.dailyCalorieGoal) setDailyCalorieGoal(data.dailyCalorieGoal)
         if (data.calorieEntries) setCalorieEntries(data.calorieEntries)
         if (data.reminders) setReminders(data.reminders)
         if (data.favorites) setFavorites(data.favorites)
         if (data.weeklyMealsCooked) setWeeklyMealsCooked(data.weeklyMealsCooked)
+        if (data.dayStreak) setDayStreak(data.dayStreak)
       } catch (e) {
         console.error('Failed to parse stored state')
       }
     }
+    setIsHydrated(true)
   }, [])
 
   // Save to localStorage
   useEffect(() => {
+    if (!isHydrated) return
     localStorage.setItem('nourish-app-state', JSON.stringify({
+      user,
+      hasCompletedOnboarding,
+      settings,
       dailyCalorieGoal,
       calorieEntries,
       reminders,
       favorites,
       weeklyMealsCooked,
+      dayStreak,
     }))
-  }, [dailyCalorieGoal, calorieEntries, reminders, favorites, weeklyMealsCooked])
+  }, [user, hasCompletedOnboarding, settings, dailyCalorieGoal, calorieEntries, reminders, favorites, weeklyMealsCooked, dayStreak, isHydrated])
+
+  const updateSettings = (newSettings: AppSettings) => {
+    setSettings(newSettings)
+  }
 
   const addCalorieEntry = (entry: Omit<CalorieEntry, 'id'>) => {
     setCalorieEntries(prev => [...prev, { ...entry, id: Date.now().toString() }])
@@ -126,6 +198,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
+      user,
+      setUser,
+      isAuthenticated: user !== null,
+      hasCompletedOnboarding,
+      setHasCompletedOnboarding,
+      settings,
+      updateSettings,
       dailyCalorieGoal,
       setDailyCalorieGoal,
       calorieEntries,
@@ -140,6 +219,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       toggleFavorite,
       weeklyMealsCooked,
       incrementMealsCooked,
+      dayStreak,
     }}>
       {children}
     </AppContext.Provider>

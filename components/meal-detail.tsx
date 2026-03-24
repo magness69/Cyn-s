@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import { Meal } from '@/lib/meals-data'
-import { X, Clock, Flame, ChefHat, Heart } from 'lucide-react'
+import { X, Clock, Flame, ChefHat, Heart, Share2 } from 'lucide-react'
+import { ShareModal } from './share-modal'
 
 interface MealDetailProps {
   meal: Meal
@@ -12,6 +14,8 @@ interface MealDetailProps {
 }
 
 export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite }: MealDetailProps) {
+  const [showShare, setShowShare] = useState(false)
+
   return (
     <div 
       className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-fade-in"
@@ -34,11 +38,19 @@ export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite
           <X className="w-5 h-5 text-muted-foreground" />
         </button>
 
+        {/* Share button */}
+        <button
+          onClick={() => setShowShare(true)}
+          className="absolute top-4 right-16 z-10 p-2 bg-card/90 backdrop-blur-sm rounded-full hover:bg-muted transition-colors"
+        >
+          <Share2 className="w-5 h-5 text-muted-foreground" />
+        </button>
+
         {/* Favorite button */}
         {onToggleFavorite && (
           <button
             onClick={onToggleFavorite}
-            className="absolute top-4 right-16 z-10 p-2 bg-card/90 backdrop-blur-sm rounded-full hover:bg-muted transition-colors"
+            className="absolute top-4 right-28 z-10 p-2 bg-card/90 backdrop-blur-sm rounded-full hover:bg-muted transition-colors"
           >
             <Heart 
               className={`w-5 h-5 transition-colors ${
@@ -106,7 +118,7 @@ export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite
             {/* Nutrition facts */}
             <div className="mb-6">
               <h3 className="font-semibold text-card-foreground mb-3 flex items-center gap-2">
-                <span>📊</span> Nutrition Facts
+                Nutrition Facts
               </h3>
               <div className="grid grid-cols-4 gap-2">
                 <div className="bg-muted rounded-xl p-3 text-center">
@@ -131,7 +143,7 @@ export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite
             {/* Ingredients */}
             <div className="mb-6">
               <h3 className="font-semibold text-card-foreground mb-3 flex items-center gap-2">
-                <span>🛒</span> Ingredients
+                Ingredients
               </h3>
               <div className="bg-muted rounded-xl p-4">
                 <ul className="space-y-2">
@@ -148,7 +160,7 @@ export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite
             {/* Instructions */}
             <div className="mb-6">
               <h3 className="font-semibold text-card-foreground mb-3 flex items-center gap-2">
-                <span>👨‍🍳</span> Instructions
+                Instructions
               </h3>
               <div className="space-y-3">
                 {meal.instructions.map((step, index) => (
@@ -164,11 +176,29 @@ export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite
 
             {/* CTA Button */}
             <button className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl hover:opacity-90 transition-opacity active:scale-[0.98]">
-              Start Cooking! 👨‍🍳
+              Start Cooking!
             </button>
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {showShare && (
+        <ShareModal
+          content={{
+            type: 'meal',
+            title: meal.name,
+            description: meal.description,
+            image: meal.image,
+            stats: [
+              { label: 'Calories', value: meal.calories.toString() },
+              { label: 'Time', value: meal.prepTime },
+              { label: 'Difficulty', value: meal.difficulty },
+            ]
+          }}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   )
 }

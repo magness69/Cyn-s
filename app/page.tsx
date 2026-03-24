@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Meal } from '@/lib/meals-data'
 import { ThemeProvider } from '@/lib/theme-context'
 import { AppProvider, useApp } from '@/lib/app-context'
@@ -15,19 +15,67 @@ import { AssistantChat } from '@/components/assistant-chat'
 import { CalorieTracker } from '@/components/calorie-tracker'
 import { Reminders } from '@/components/reminders'
 import { ImageSearch } from '@/components/image-search'
+import { Onboarding } from '@/components/onboarding'
+import { AuthScreen } from '@/components/auth-screen'
 
 type Tab = 'home' | 'search' | 'favorites' | 'profile'
 
 function NourishAppContent() {
   const [activeTab, setActiveTab] = useState<Tab>('home')
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
-  const { favorites, toggleFavorite } = useApp()
+  const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
+  
+  // Onboarding states
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
   
   // Feature modals
   const [showAssistant, setShowAssistant] = useState(false)
   const [showCalories, setShowCalories] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [showImageSearch, setShowImageSearch] = useState(false)
+
+  // Check if first time user
+  useEffect(() => {
+    // Small delay to let hydration complete
+    const timer = setTimeout(() => {
+      if (!hasCompletedOnboarding) {
+        setShowOnboarding(true)
+      }
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [hasCompletedOnboarding])
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false)
+    setShowAuth(true)
+  }
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false)
+    setShowAuth(true)
+  }
+
+  const handleAuthComplete = (userData: { name: string; email: string; provider: string }) => {
+    setUser({
+      name: userData.name,
+      email: userData.email,
+      bio: '',
+      avatar: null,
+      height: '',
+      weight: '',
+      heightUnit: 'cm',
+      weightUnit: 'kg',
+      provider: userData.provider,
+    })
+    setHasCompletedOnboarding(true)
+    setShowAuth(false)
+  }
+
+  const handleAuthSkip = () => {
+    setHasCompletedOnboarding(true)
+    setShowAuth(false)
+  }
 
   const handleMealSelect = (meal: Meal) => {
     setSelectedMeal(meal)
@@ -107,6 +155,22 @@ function NourishAppContent() {
         <ImageSearch 
           onClose={() => setShowImageSearch(false)} 
           onMealSelect={handleMealSelect}
+        />
+      )}
+
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <Onboarding 
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+
+      {/* Auth Screen */}
+      {showAuth && (
+        <AuthScreen 
+          onComplete={handleAuthComplete}
+          onSkip={handleAuthSkip}
         />
       )}
     </main>
