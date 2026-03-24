@@ -10,14 +10,14 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Nourish - Healthy Eating Made Easy',
+  title: "Cyn's - Healthy Eating Made Easy",
   description: 'Your cozy companion for discovering delicious, healthy meals. Get personalized recipe suggestions based on ingredients you have at home.',
   generator: 'v0.app',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Nourish',
+    title: "Cyn's",
   },
   icons: {
     icon: [
@@ -62,7 +62,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('nourish-theme') || 'system';
+                const theme = localStorage.getItem('cyns-theme') || 'system';
                 const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
                 document.documentElement.classList.add(isDark ? 'dark' : 'light');
               } catch (e) {}

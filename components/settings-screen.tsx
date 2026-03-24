@@ -124,7 +124,7 @@ export function SettingsScreen({ onClose, onSignOut, settings, onUpdateSettings 
       items: [
         { 
           icon: Info, 
-          label: 'About Nourish', 
+          label: "About Cyn's", 
           description: 'Version 1.0.0',
           action: true
         },
@@ -229,7 +229,7 @@ export function SettingsScreen({ onClose, onSignOut, settings, onUpdateSettings 
 
           {/* Version info */}
           <p className="text-center text-muted-foreground text-xs mt-8 pb-6">
-            Nourish v1.0.0 - Made with care
+            Cyn's v1.0.0 - Made with care
           </p>
         </div>
       </div>

@@ -141,70 +141,170 @@ html {
   }
 }
 
-/* Custom animations */
-@keyframes slide-up {
-  from {
+/* ===== iOS-STYLE SPRING/BOUNCE ANIMATIONS ===== */
+
+/* iOS Spring Slide Up - Main entrance animation */
+@keyframes ios-slide-up {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px) scale(0.96);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-8px) scale(1.01);
+  }
+  80% {
+    transform: translateY(4px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes fade-in {
-  from {
+/* iOS Spring Scale - For buttons and interactive elements */
+@keyframes ios-spring-scale {
+  0% {
+    transform: scale(0.8);
     opacity: 0;
   }
-  to {
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
     opacity: 1;
   }
 }
 
-@keyframes scale-in {
-  from {
+/* iOS Bounce In - For modals and popups */
+@keyframes ios-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(50px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-10px);
+  }
+  70% {
+    transform: scale(0.95) translateY(5px);
+  }
+  85% {
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* iOS Rubber Band - For drag/pull feedback */
+@keyframes ios-rubber-band {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15, 0.85); }
+  40% { transform: scale(0.9, 1.1); }
+  50% { transform: scale(1.05, 0.95); }
+  65% { transform: scale(0.98, 1.02); }
+  75% { transform: scale(1.02, 0.98); }
+  100% { transform: scale(1); }
+}
+
+/* iOS Jiggle - For delete mode or attention */
+@keyframes ios-jiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+/* iOS Fade Scale - Subtle entrance */
+@keyframes ios-fade-scale {
+  0% {
     opacity: 0;
     transform: scale(0.95);
   }
-  to {
+  100% {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-@keyframes bounce-soft {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+/* iOS Pop - For quick feedback */
+@keyframes ios-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
+/* iOS Shake - For error feedback */
+@keyframes ios-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Simple fade */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Animation classes */
 .animate-slide-up {
-  animation: slide-up 0.4s ease-out forwards;
+  animation: ios-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
+  animation: fade-in 0.25s ease-out forwards;
 }
 
 .animate-scale-in {
-  animation: scale-in 0.3s ease-out forwards;
+  animation: ios-spring-scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.animate-bounce-soft {
-  animation: bounce-soft 2s ease-in-out infinite;
+.animate-bounce-in {
+  animation: ios-bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Stagger animations */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+.animate-rubber-band {
+  animation: ios-rubber-band 0.6s ease-out;
+}
+
+.animate-jiggle {
+  animation: ios-jiggle 0.15s ease-in-out infinite;
+}
+
+.animate-ios-pop {
+  animation: ios-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-ios-shake {
+  animation: ios-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+/* Tap feedback - iOS style press effect */
+.tap-feedback {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tap-feedback:active {
+  transform: scale(0.96);
+}
+
+/* Deep press - for important buttons */
+.tap-feedback-deep:active {
+  transform: scale(0.92);
+}
+
+/* Stagger animations with spring timing */
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
+.stagger-5 { animation-delay: 0.20s; }
+.stagger-6 { animation-delay: 0.24s; }
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
@@ -215,35 +315,30 @@ html {
   display: none;
 }
 
-/* Pulse animation for FAB */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0.4);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(74, 124, 89, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0);
-  }
-}
-
-.animate-pulse-ring {
-  animation: pulse-ring 2s ease-out infinite;
-}
-
-/* Spring animation */
-@keyframes spring {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.1); }
-  50% { transform: scale(0.95); }
+/* FAB spring animation on drag release */
+@keyframes fab-settle {
+  0% { transform: scale(1.1); }
+  40% { transform: scale(0.95); }
   70% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
 
-.animate-spring {
-  animation: spring 0.5s ease-out;
+.animate-fab-settle {
+  animation: fab-settle 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Smooth spring transition for FAB movement */
+.spring-transition {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Card hover with spring */
+.card-spring {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.card-spring:hover {
+  transform: translateY(-2px);
+}
+.card-spring:active {
+  transform: scale(0.98);
 }

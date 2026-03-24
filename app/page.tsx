@@ -20,7 +20,7 @@ import { AuthScreen } from '@/components/auth-screen'
 
 type Tab = 'home' | 'search' | 'favorites' | 'profile'
 
-function NourishAppContent() {
+function CynsAppContent() {
   const [activeTab, setActiveTab] = useState<Tab>('home')
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
   const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
@@ -177,11 +177,11 @@ function NourishAppContent() {
   )
 }
 
-export default function NourishApp() {
+export default function CynsApp() {
   return (
     <ThemeProvider>
       <AppProvider>
-        <NourishAppContent />
+        <CynsAppContent />
       </AppProvider>
     </ThemeProvider>
   )

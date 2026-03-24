@@ -200,7 +200,7 @@ export function ProfileTab() {
 
       {/* Version */}
       <p className="text-center text-muted-foreground text-xs mt-6">
-        Nourish v1.0.0
+        Cyn's v1.0.0
       </p>
 
       {/* Modals */}
@@ -226,7 +226,7 @@ export function ProfileTab() {
           content={{
             type: 'achievement',
             title: 'Weekly Goal Progress',
-            description: `I've cooked ${weeklyMealsCooked} healthy meals this week on Nourish!`,
+            description: `I've cooked ${weeklyMealsCooked} healthy meals this week on Cyn's!`,
             stats: [
               { label: 'Meals', value: weeklyMealsCooked.toString() },
               { label: 'Streak', value: `${dayStreak} days` },

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { X, MessageCircle, Bell, Flame, Camera, Sparkles } from 'lucide-react'
+import { X, MessageCircle, Bell, Flame, Camera } from 'lucide-react'
+import { AppLogo } from './app-logo'
 
 interface FloatingAssistantButtonProps {
   onOpenAssistant: () => void
@@ -28,7 +29,7 @@ export function FloatingAssistantButton({
   // Initialize position
   useEffect(() => {
     if (!hasInitialized.current) {
-      const savedPosition = localStorage.getItem('nourish-fab-position')
+      const savedPosition = localStorage.getItem('cyns-fab-position')
       if (savedPosition) {
         setPosition(JSON.parse(savedPosition))
       } else {
@@ -45,7 +46,7 @@ export function FloatingAssistantButton({
   // Save position to localStorage
   useEffect(() => {
     if (hasInitialized.current) {
-      localStorage.setItem('nourish-fab-position', JSON.stringify(position))
+      localStorage.setItem('cyns-fab-position', JSON.stringify(position))
     }
   }, [position])
 
@@ -161,9 +162,9 @@ export function FloatingAssistantButton({
           {isExpanded ? (
             <X className="w-6 h-6 text-foreground" />
           ) : logoUrl ? (
-            <img src={logoUrl} alt="Nourish" className="w-8 h-8 rounded-full object-cover" />
+            <img src={logoUrl} alt="Cyn's" className="w-8 h-8 rounded-full object-cover" />
           ) : (
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
+            <AppLogo size="sm" iconOnly className="text-primary-foreground" />
           )}
         </button>
       </div>

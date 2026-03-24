@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
-    const stored = localStorage.getItem('nourish-theme') as Theme | null
+    const stored = localStorage.getItem('cyns-theme') as Theme | null
     if (stored) {
       setTheme(stored)
     }
@@ -41,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     updateTheme()
-    localStorage.setItem('nourish-theme', theme)
+    localStorage.setItem('cyns-theme', theme)
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {

@@ -12,7 +12,7 @@ interface OnboardingProps {
 const slides = [
   {
     icon: Sparkles,
-    title: 'Welcome to Nourish',
+    title: "Welcome to Cyn's",
     subtitle: 'Your cozy companion for healthy eating',
     description: 'Discover delicious, nutritious meals tailored just for you. Let us help you build healthier habits, one meal at a time.',
     color: 'from-primary/20 to-accent/20',
