@@ -2,14 +2,16 @@
 
 import Image from 'next/image'
 import { Meal } from '@/lib/meals-data'
-import { X, Clock, Flame, ChefHat } from 'lucide-react'
+import { X, Clock, Flame, ChefHat, Heart } from 'lucide-react'
 
 interface MealDetailProps {
   meal: Meal
   onClose: () => void
+  isFavorite?: boolean
+  onToggleFavorite?: () => void
 }
 
-export function MealDetail({ meal, onClose }: MealDetailProps) {
+export function MealDetail({ meal, onClose, isFavorite = false, onToggleFavorite }: MealDetailProps) {
   return (
     <div 
       className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-fade-in"
@@ -31,6 +33,20 @@ export function MealDetail({ meal, onClose }: MealDetailProps) {
         >
           <X className="w-5 h-5 text-muted-foreground" />
         </button>
+
+        {/* Favorite button */}
+        {onToggleFavorite && (
+          <button
+            onClick={onToggleFavorite}
+            className="absolute top-4 right-16 z-10 p-2 bg-card/90 backdrop-blur-sm rounded-full hover:bg-muted transition-colors"
+          >
+            <Heart 
+              className={`w-5 h-5 transition-colors ${
+                isFavorite ? 'fill-destructive text-destructive' : 'text-muted-foreground'
+              }`} 
+            />
+          </button>
+        )}
 
         <div className="overflow-y-auto max-h-[calc(92vh-24px)]">
           {/* Hero Image */}

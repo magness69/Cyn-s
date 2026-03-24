@@ -39,7 +39,10 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#4a7c59',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f7faf8' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a2e1f' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -53,7 +56,20 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('nourish-theme') || 'system';
+                const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.classList.add(isDark ? 'dark' : 'light');
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className={`${poppins.className} font-sans antialiased`}>
         {children}
         <Analytics />
