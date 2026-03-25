@@ -82,12 +82,14 @@ function CynsAppContent() {
         setShowAuth(false)
         setShowOnboarding(false)
       } else {
-        const seenOnboarding = localStorage.getItem('cyns-seen-onboarding')
-        if (!seenOnboarding) {
-          setShowOnboarding(true)
-        } else {
-          setShowAuth(true)
-        }
+        // const seenOnboarding = localStorage.getItem('cyns-seen-onboarding')
+        // if (!seenOnboarding) {
+        //   setShowOnboarding(true)
+        // } else {
+        //   setShowAuth(true)
+        // }
+        setShowOnboarding(true)
+        setShowAuth(false)
       }
     }
 
@@ -97,8 +99,8 @@ function CynsAppContent() {
       if (event === 'SIGNED_OUT' || !session) {
         setUser(null)
         setHasCompletedOnboarding(false)
-        setShowAuth(true)
-        setShowOnboarding(false)
+        setShowOnboarding(true)
+        setShowAuth(false)
       } else if (event === 'SIGNED_IN' && session?.user) {
         const user = session.user
         setUser({
@@ -122,13 +124,11 @@ function CynsAppContent() {
   }, [])
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('cyns-seen-onboarding', 'true')
     setShowOnboarding(false)
     setShowAuth(true)
   }
 
   const handleOnboardingSkip = () => {
-    localStorage.setItem('cyns-seen-onboarding', 'true')
     setShowOnboarding(false)
     setShowAuth(true)
   }
