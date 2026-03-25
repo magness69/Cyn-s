@@ -35,7 +35,6 @@ function CynsAppContent() {
   const [showImageSearch, setShowImageSearch] = useState(false)
 
   useEffect(() => {
-    // Check initial session
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -53,8 +52,11 @@ function CynsAppContent() {
         })
         setHasCompletedOnboarding(true)
         setShowAuth(false)
+        setShowOnboarding(false)
       } else {
-        if (!hasCompletedOnboarding) {
+        // Check if they've seen onboarding before (stored separately)
+        const seenOnboarding = localStorage.getItem('cyns-seen-onboarding')
+        if (!seenOnboarding) {
           setShowOnboarding(true)
         } else {
           setShowAuth(true)
@@ -64,14 +66,12 @@ function CynsAppContent() {
 
     checkUser()
 
-    // Listen for auth changes (sign in / sign out)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
         setUser(null)
         setHasCompletedOnboarding(false)
-        setShowAuth(true)
-        // Clear localStorage
-        localStorage.removeItem('nourish-app-state')
+        setShowAuth(true)  // go to auth screen only, NOT onboarding
+        setShowOnboarding(false)
       } else if (event === 'SIGNED_IN' && session?.user) {
         const user = session.user
         setUser({
@@ -87,6 +87,7 @@ function CynsAppContent() {
         })
         setHasCompletedOnboarding(true)
         setShowAuth(false)
+        setShowOnboarding(false)
       }
     })
 
@@ -94,11 +95,13 @@ function CynsAppContent() {
   }, [])
 
   const handleOnboardingComplete = () => {
+    localStorage.setItem('cyns-seen-onboarding', 'true')  // remember they saw it
     setShowOnboarding(false)
     setShowAuth(true)
   }
 
   const handleOnboardingSkip = () => {
+    localStorage.setItem('cyns-seen-onboarding', 'true')  // remember they saw it
     setShowOnboarding(false)
     setShowAuth(true)
   }
@@ -144,11 +147,9 @@ function CynsAppContent() {
         {activeTab === 'home' && (
           <HomeTab onMealSelect={handleMealSelect} />
         )}
-        
         {activeTab === 'search' && (
           <IngredientPicker onMealSelect={handleMealSelect} />
         )}
-        
         {activeTab === 'favorites' && (
           <FavoritesTab 
             favorites={favorites} 
@@ -156,7 +157,6 @@ function CynsAppContent() {
             onTabChange={setActiveTab}
           />
         )}
-        
         {activeTab === 'profile' && (
           <ProfileTab />
         )}
