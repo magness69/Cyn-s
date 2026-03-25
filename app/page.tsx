@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase' // ✅ AJOUT
+import { supabase } from '@/lib/supabase'
 import { Meal } from '@/lib/meals-data'
 import { ThemeProvider } from '@/lib/theme-context'
 import { AppProvider, useApp } from '@/lib/app-context'
@@ -34,24 +34,23 @@ function CynsAppContent() {
   const [showReminders, setShowReminders] = useState(false)
   const [showImageSearch, setShowImageSearch] = useState(false)
 
-  // ✅ NEW: CHECK USER AUTO
   useEffect(() => {
+    // Check initial session
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
         setUser({
-          name: user.user_metadata?.name || 'User',
+          name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
           email: user.email || '',
           bio: '',
-          avatar: null,
+          avatar: user.user_metadata?.avatar_url || null,
           height: '',
           weight: '',
           heightUnit: 'cm',
           weightUnit: 'kg',
           provider: user.app_metadata?.provider || 'email',
         })
-
         setHasCompletedOnboarding(true)
         setShowAuth(false)
       } else {
@@ -64,6 +63,34 @@ function CynsAppContent() {
     }
 
     checkUser()
+
+    // Listen for auth changes (sign in / sign out)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setUser(null)
+        setHasCompletedOnboarding(false)
+        setShowAuth(true)
+        // Clear localStorage
+        localStorage.removeItem('nourish-app-state')
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        const user = session.user
+        setUser({
+          name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
+          email: user.email || '',
+          bio: '',
+          avatar: user.user_metadata?.avatar_url || null,
+          height: '',
+          weight: '',
+          heightUnit: 'cm',
+          weightUnit: 'kg',
+          provider: user.app_metadata?.provider || 'email',
+        })
+        setHasCompletedOnboarding(true)
+        setShowAuth(false)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const handleOnboardingComplete = () => {
@@ -76,7 +103,6 @@ function CynsAppContent() {
     setShowAuth(true)
   }
 
-  // ✅ FIXED
   const handleAuthComplete = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -85,7 +111,7 @@ function CynsAppContent() {
       name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
       email: user.email || '',
       bio: '',
-      avatar: user.user_metadata?.avatar_url || null,  // ← Google photo
+      avatar: user.user_metadata?.avatar_url || null,
       height: '',
       weight: '',
       heightUnit: 'cm',
