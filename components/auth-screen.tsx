@@ -1,5 +1,5 @@
 'use client'
-
+import { supabase } from '@/lib/supabase'
 import { useState } from 'react'
 import { Mail, ArrowRight, Loader2, X } from 'lucide-react'
 import { AppLogo } from './app-logo'
@@ -12,33 +12,64 @@ interface AuthScreenProps {
 export function AuthScreen({ onComplete, onSkip }: AuthScreenProps) {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
   const [step, setStep] = useState<'main' | 'email'>('main')
   const [loading, setLoading] = useState(false)
 
-  const handleSocialLogin = (provider: string) => {
+  const handleSocialLogin = async (provider: string) => {
     setLoading(true)
-    // Simulate auth
-    setTimeout(() => {
-      onComplete({
-        name: 'Healthy Foodie',
-        email: `user@${provider.toLowerCase()}.com`,
-        provider,
+
+    if (provider === 'Google') {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          scopes: 'profile email',
+          queryParams: {
+            prompt: 'select_account',
+            access_type: 'online',
+          },
+        },
       })
-    }, 1500)
+
+      if (error) {
+        alert(error.message)
+        setLoading(false)
+      }
+    }
+
+      else if (provider === 'Instagram') {
+        alert("Instagram login is not implemented yet. Please use Google or Email.")
+        setLoading(false)
+      }
   }
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !name) return
-    
+
+    if (!email || !password) return
+
     setLoading(true)
-    setTimeout(() => {
-      onComplete({
-        name,
-        email,
-        provider: 'email',
-      })
-    }, 1500)
+
+    // SIGN UP (créer compte)
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name,
+        },
+      },
+    })
+
+    if (error) {
+      alert(error.message)
+      setLoading(false)
+      return
+    }
+
+    alert("Account created 🔥 check your email")
+
+    setLoading(false)
   }
 
   return (
@@ -157,6 +188,14 @@ export function AuthScreen({ onComplete, onSkip }: AuthScreenProps) {
                 className="w-full bg-muted border-0 py-4 px-4 rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary outline-none"
                 required
               />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full bg-muted border-0 py-4 px-4 rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary outline-none"
+                required
+               />
             </div>
 
             <button

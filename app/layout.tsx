@@ -57,19 +57,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const theme = localStorage.getItem('cyns-theme') || 'system';
-                const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                document.documentElement.classList.add(isDark ? 'dark' : 'light');
-              } catch (e) {}
-            `,
-          }}
-        />
-      </head>
       <body className={`${poppins.className} font-sans antialiased`}>
         {children}
         <Analytics />

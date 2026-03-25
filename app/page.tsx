@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase' // ✅ AJOUT
 import { Meal } from '@/lib/meals-data'
 import { ThemeProvider } from '@/lib/theme-context'
 import { AppProvider, useApp } from '@/lib/app-context'
@@ -25,26 +26,46 @@ function CynsAppContent() {
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
   const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
   
-  // Onboarding states
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
   
-  // Feature modals
   const [showAssistant, setShowAssistant] = useState(false)
   const [showCalories, setShowCalories] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [showImageSearch, setShowImageSearch] = useState(false)
 
-  // Check if first time user
+  // ✅ NEW: CHECK USER AUTO
   useEffect(() => {
-    // Small delay to let hydration complete
-    const timer = setTimeout(() => {
-      if (!hasCompletedOnboarding) {
-        setShowOnboarding(true)
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      console.log('USER METADATA:', user?.user_metadata)
+
+      if (user) {
+        setUser({
+          name: user.user_metadata?.name || 'User',
+          email: user.email || '',
+          bio: '',
+          avatar: user.user_metadata?.avatar_url || null,
+          height: '',
+          weight: '',
+          heightUnit: 'cm',
+          weightUnit: 'kg',
+          provider: user.app_metadata?.provider || 'email',
+        })
+
+        setHasCompletedOnboarding(true)
+        setShowAuth(false)
+      } else {
+        if (!hasCompletedOnboarding) {
+          setShowOnboarding(true)
+        } else {
+          setShowAuth(true)
+        }
       }
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [hasCompletedOnboarding])
+    }
+
+    checkUser()
+  }, [])
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false)
@@ -56,18 +77,23 @@ function CynsAppContent() {
     setShowAuth(true)
   }
 
-  const handleAuthComplete = (userData: { name: string; email: string; provider: string }) => {
+  // ✅ FIXED
+  const handleAuthComplete = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     setUser({
-      name: userData.name,
-      email: userData.email,
+      name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
+      email: user.email || '',
       bio: '',
-      avatar: null,
+      avatar: user.user_metadata?.avatar_url || null,  // ← Google photo
       height: '',
       weight: '',
       heightUnit: 'cm',
       weightUnit: 'kg',
-      provider: userData.provider,
+      provider: user.app_metadata?.provider || 'email',
     })
+
     setHasCompletedOnboarding(true)
     setShowAuth(false)
   }
@@ -87,12 +113,9 @@ function CynsAppContent() {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Status bar spacer for iOS */}
       <div className="h-safe-area-inset-top" />
       
-      {/* Main content area */}
       <div className="max-w-md mx-auto px-5 pt-6 pb-24">
-        {/* Tab content */}
         {activeTab === 'home' && (
           <HomeTab onMealSelect={handleMealSelect} />
         )}
@@ -114,10 +137,8 @@ function CynsAppContent() {
         )}
       </div>
 
-      {/* Bottom Navigation */}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Floating Assistant Button */}
       <FloatingAssistantButton
         onOpenAssistant={() => setShowAssistant(true)}
         onOpenReminders={() => setShowReminders(true)}
@@ -125,7 +146,6 @@ function CynsAppContent() {
         onOpenImageSearch={() => setShowImageSearch(true)}
       />
 
-      {/* Meal Detail Modal */}
       {selectedMeal && (
         <MealDetail 
           meal={selectedMeal} 
@@ -135,7 +155,6 @@ function CynsAppContent() {
         />
       )}
 
-      {/* Feature Modals */}
       {showAssistant && (
         <AssistantChat 
           onClose={() => setShowAssistant(false)} 
@@ -158,7 +177,6 @@ function CynsAppContent() {
         />
       )}
 
-      {/* Onboarding Flow */}
       {showOnboarding && (
         <Onboarding 
           onComplete={handleOnboardingComplete}
@@ -166,7 +184,6 @@ function CynsAppContent() {
         />
       )}
 
-      {/* Auth Screen */}
       {showAuth && (
         <AuthScreen 
           onComplete={handleAuthComplete}
