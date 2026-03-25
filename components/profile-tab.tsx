@@ -5,6 +5,7 @@ import { Settings, ChevronRight, Bell, Moon, Sun, HelpCircle, Star, Monitor, Edi
 import Image from 'next/image'
 import { useTheme } from '@/lib/theme-context'
 import { useApp, UserProfile } from '@/lib/app-context'
+import { supabase } from '@/lib/supabase'
 import { EditProfile } from './edit-profile'
 import { SettingsScreen } from './settings-screen'
 import { ShareModal } from './share-modal'
@@ -33,7 +34,8 @@ export function ProfileTab() {
     setUser(profile)
   }
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
     setUser(null)
     setHasCompletedOnboarding(false)
   }
@@ -192,7 +194,7 @@ export function ProfileTab() {
 
       {/* Sign Out */}
       <button 
-        onClick={handleSignOut}
+        onClick={() => handleSignOut()}
         className="w-full mt-4 flex items-center justify-center gap-2 py-4 text-destructive font-medium hover:bg-destructive/10 rounded-xl transition-colors"
       >
         Sign Out
