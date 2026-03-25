@@ -38,14 +38,13 @@ function CynsAppContent() {
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      console.log('USER METADATA:', user?.user_metadata)
 
       if (user) {
         setUser({
           name: user.user_metadata?.name || 'User',
           email: user.email || '',
           bio: '',
-          avatar: user.user_metadata?.avatar_url || null,
+          avatar: null,
           height: '',
           weight: '',
           heightUnit: 'cm',
