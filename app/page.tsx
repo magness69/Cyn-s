@@ -23,10 +23,23 @@ type Tab = 'home' | 'search' | 'favorites' | 'profile'
 
 function CynsAppContent() {
 
-
-
+  // ✅ Splash
   const [showSplash, setShowSplash] = useState(true)
 
+  // 🔥 TOUS LES HOOKS DOIVENT ÊTRE ICI (AVANT RETURN)
+  const [activeTab, setActiveTab] = useState<Tab>('home')
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
+  const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
+
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
+
+  const [showAssistant, setShowAssistant] = useState(false)
+  const [showCalories, setShowCalories] = useState(false)
+  const [showReminders, setShowReminders] = useState(false)
+  const [showImageSearch, setShowImageSearch] = useState(false)
+
+  // Splash timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false)
@@ -35,26 +48,7 @@ function CynsAppContent() {
     return () => clearTimeout(timer)
   }, [])
 
-  if (showSplash) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#f5f7f5] z-[9999]">
-        <img src="/icon-512.png" className="w-24 h-24" />
-      </div>
-    )
-  }
-
-  const [activeTab, setActiveTab] = useState<Tab>('home')
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
-  const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
-  
-  const [showOnboarding, setShowOnboarding] = useState(false)
-  const [showAuth, setShowAuth] = useState(false)
-  
-  const [showAssistant, setShowAssistant] = useState(false)
-  const [showCalories, setShowCalories] = useState(false)
-  const [showReminders, setShowReminders] = useState(false)
-  const [showImageSearch, setShowImageSearch] = useState(false)
-
+  // Auth check
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -75,7 +69,6 @@ function CynsAppContent() {
         setShowAuth(false)
         setShowOnboarding(false)
       } else {
-        // Check if they've seen onboarding before (stored separately)
         const seenOnboarding = localStorage.getItem('cyns-seen-onboarding')
         if (!seenOnboarding) {
           setShowOnboarding(true)
@@ -91,7 +84,7 @@ function CynsAppContent() {
       if (event === 'SIGNED_OUT' || !session) {
         setUser(null)
         setHasCompletedOnboarding(false)
-        setShowAuth(true)  // go to auth screen only, NOT onboarding
+        setShowAuth(true)
         setShowOnboarding(false)
       } else if (event === 'SIGNED_IN' && session?.user) {
         const user = session.user
@@ -116,13 +109,13 @@ function CynsAppContent() {
   }, [])
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('cyns-seen-onboarding', 'true')  // remember they saw it
+    localStorage.setItem('cyns-seen-onboarding', 'true')
     setShowOnboarding(false)
     setShowAuth(true)
   }
 
   const handleOnboardingSkip = () => {
-    localStorage.setItem('cyns-seen-onboarding', 'true')  // remember they saw it
+    localStorage.setItem('cyns-seen-onboarding', 'true')
     setShowOnboarding(false)
     setShowAuth(true)
   }
@@ -162,15 +155,19 @@ function CynsAppContent() {
 
   return (
     <main className="min-h-screen bg-background">
+
+      {/* ✅ SPLASH OVERLAY (FIXED) */}
+      {showSplash && (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#f5f7f5] z-[9999]">
+          <img src="/icon-512.png" className="w-24 h-24" />
+        </div>
+      )}
+
       <div className="h-safe-area-inset-top" />
       
       <div className="max-w-md mx-auto px-5 pt-6 pb-24">
-        {activeTab === 'home' && (
-          <HomeTab onMealSelect={handleMealSelect} />
-        )}
-        {activeTab === 'search' && (
-          <IngredientPicker onMealSelect={handleMealSelect} />
-        )}
+        {activeTab === 'home' && <HomeTab onMealSelect={handleMealSelect} />}
+        {activeTab === 'search' && <IngredientPicker onMealSelect={handleMealSelect} />}
         {activeTab === 'favorites' && (
           <FavoritesTab 
             favorites={favorites} 
@@ -178,9 +175,7 @@ function CynsAppContent() {
             onTabChange={setActiveTab}
           />
         )}
-        {activeTab === 'profile' && (
-          <ProfileTab />
-        )}
+        {activeTab === 'profile' && <ProfileTab />}
       </div>
 
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
@@ -202,10 +197,7 @@ function CynsAppContent() {
       )}
 
       {showAssistant && (
-        <AssistantChat 
-          onClose={() => setShowAssistant(false)} 
-          onMealSelect={handleMealSelect}
-        />
+        <AssistantChat onClose={() => setShowAssistant(false)} onMealSelect={handleMealSelect} />
       )}
 
       {showCalories && (
@@ -217,24 +209,15 @@ function CynsAppContent() {
       )}
 
       {showImageSearch && (
-        <ImageSearch 
-          onClose={() => setShowImageSearch(false)} 
-          onMealSelect={handleMealSelect}
-        />
+        <ImageSearch onClose={() => setShowImageSearch(false)} onMealSelect={handleMealSelect} />
       )}
 
       {showOnboarding && (
-        <Onboarding 
-          onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
-        />
+        <Onboarding onComplete={handleOnboardingComplete} onSkip={handleOnboardingSkip} />
       )}
 
       {showAuth && (
-        <AuthScreen 
-          onComplete={handleAuthComplete}
-          onSkip={handleAuthSkip}
-        />
+        <AuthScreen onComplete={handleAuthComplete} onSkip={handleAuthSkip} />
       )}
     </main>
   )
