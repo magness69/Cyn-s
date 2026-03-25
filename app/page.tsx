@@ -22,6 +22,27 @@ import { AuthScreen } from '@/components/auth-screen'
 type Tab = 'home' | 'search' | 'favorites' | 'profile'
 
 function CynsAppContent() {
+
+
+
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (showSplash) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-[#f5f7f5] z-[9999]">
+        <img src="/icon-512.png" className="w-24 h-24" />
+      </div>
+    )
+  }
+
   const [activeTab, setActiveTab] = useState<Tab>('home')
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
   const { favorites, toggleFavorite, hasCompletedOnboarding, setHasCompletedOnboarding, setUser } = useApp()
