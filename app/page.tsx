@@ -25,6 +25,7 @@ function CynsAppContent() {
 
   // ✅ Splash
   const [showSplash, setShowSplash] = useState(true)
+  const [isDark, setIsDark] = useState(false)
 
   // 🔥 TOUS LES HOOKS DOIVENT ÊTRE ICI (AVANT RETURN)
   const [activeTab, setActiveTab] = useState<Tab>('home')
@@ -46,6 +47,18 @@ function CynsAppContent() {
     }, 1500)
 
     return () => clearTimeout(timer)
+  }, [])
+
+
+  
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDark(media.matches)
+
+    const listener = (e: any) => setIsDark(e.matches)
+    media.addEventListener('change', listener)
+
+    return () => media.removeEventListener('change', listener)
   }, [])
 
   // Auth check
@@ -158,7 +171,9 @@ function CynsAppContent() {
 
       {/* ✅ SPLASH OVERLAY (FIXED) */}
       {showSplash && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#f5f7f5] z-[9999]">
+        <div className={`fixed inset-0 flex items-center justify-center z-[9999] ${
+          isDark ? 'bg-black' : 'bg-[#f5f7f5]'
+        }`}>
           <img src="/icon-512.png" className="w-24 h-24" />
         </div>
       )}
