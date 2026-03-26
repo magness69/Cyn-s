@@ -20,7 +20,7 @@
       "type": "image/png"
     },
     {
-      "src": "/icon.svg",
+      "src": "/icon-192-v2.png",
       "sizes": "any",
       "type": "image/svg+xml"
     }
