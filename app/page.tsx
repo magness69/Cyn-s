@@ -174,7 +174,7 @@ function CynsAppContent() {
         <div className={`fixed inset-0 flex items-center justify-center z-[9999] ${
           isDark ? 'bg-black' : 'bg-[#f5f7f5]'
         }`}>
-          <img src="/icon-512.png" className="w-24 h-24" />
+          <img src="/icon-512-v2.png" className="w-24 h-24" />
         </div>
       )}
 

@@ -30,7 +30,7 @@ export function AppLogo({
 
   const logo = (
     <img
-      src="/icon-192.png"
+      src="/icon-192-v2.png"
       alt="Cyn's logo"
       className={`${sizeClasses[size]} object-contain rounded-xl`}
     />
